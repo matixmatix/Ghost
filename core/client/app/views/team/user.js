@@ -11,6 +11,8 @@ var TeamUserView = Ember.View.extend({
 
     isNotOwnersProfile: Ember.computed.not('controller.user.isOwner'),
 
+    isAdminUserOwnerProfile: Ember.computed.and('currentUser.isAdmin', 'controller.user.isOwner'),
+
     canAssignRoles: Ember.computed.or('currentUser.isAdmin', 'currentUser.isOwner'),
 
     canMakeOwner: Ember.computed.and('currentUser.isOwner', 'isNotOwnProfile', 'controller.user.isAdmin'),

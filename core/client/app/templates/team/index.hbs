@@ -1,63 +1,54 @@
     <header class="view-header">
         {{#gh-view-title openMobileMenu="openMobileMenu"}}Team{{/gh-view-title}}
-        <section class="view-actions">
-            <button class="btn btn-green" {{action "openModal" "invite-new-user"}} >Invite People</button>
-        </section>
+        {{#unless session.user.isAuthor}}
+            <section class="view-actions">
+                <button class="btn btn-green" {{action "openModal" "invite-new-user"}} >Invite People</button>
+            </section>
+        {{/unless}}
     </header>
 
     {{#view "users-list"}}
-        {{#if invitedUsers}}
-            <section class="user-list invited-users">
+        {{#unless session.user.isAuthor}}
+            {{#if invitedUsers}}
+                <section class="user-list invited-users">
 
-                <h4 class="user-list-title">Invited users</h4>
+                    <h4 class="user-list-title">Invited users</h4>
 
-                {{#each invitedUsers itemController="team/user" as |user|}}
-                    <div class="user-list-item">
-                        <span class="user-list-item-icon icon-mail">ic</span>
+                    {{#each invitedUsers itemController="team/user" as |user|}}
+                        <div class="user-list-item">
+                            <span class="user-list-item-icon icon-mail">ic</span>
 
-                        <div class="user-list-item-body">
-                            <span class="name">{{user.email}}</span><br>
+                            <div class="user-list-item-body">
+                                <span class="name">{{user.email}}</span><br>
                                 {{#if user.model.pending}}
                                     <span class="red">Invitation not sent - please try again</span>
                                 {{else}}
                                     <span class="description">Invitation sent: {{user.model.created_at}}</span>
                                 {{/if}}
+                            </div>
+                            <aside class="user-list-item-aside">
+                                <a class="user-list-action" href="#" {{action "revoke"}}>Revoke</a>
+                                <a class="user-list-action" href="#" {{action "resend"}}>Resend</a>
+                            </aside>
                         </div>
-                        <aside class="user-list-item-aside">
-                            <a class="user-list-action" href="#" {{action "revoke"}}>Revoke</a>
-                            <a class="user-list-action" href="#" {{action "resend"}}>Resend</a>
-                        </aside>
-                    </div>
-                {{/each}}
+                    {{/each}}
 
-            </section>
-        {{/if}}
+                </section>
+            {{/if}}
+        {{/unless}}
 
         <section class="user-list active-users">
 
             <h4 class="user-list-title">Active users</h4>
 
             {{#each activeUsers itemController="team/user" as |user|}}
-                {{#link-to 'team.user' user.model class="user-list-item" }}
-                    <span class="user-list-item-figure" style={{user.userImageBackground}}>
-                        <span class="hidden">Photo of {{user.model.name}}</span>
-                    </span>
-
-                    <div class="user-list-item-body">
-                        <span class="name">
-                            {{user.model.name}}
-                        </span>
-                        <br>
-                        <span class="description">Last seen: {{user.last_login}}</span>
-                    </div>
-                    <aside class="user-list-item-aside">
-                        {{#unless user.model.isAuthor}}
-                            {{#each user.model.roles as |role|}}
-                                <span class="role-label {{role.lowerCaseName}}">{{role.name}}</span>
-                            {{/each}}
-                        {{/unless}}
-                    </aside>
-                {{/link-to}}
+                {{#unless session.user.isAuthor}}
+                    {{#link-to 'team.user' user.model class="user-list-item" }}
+                        {{partial 'user-list-item'}}
+                    {{/link-to}}
+                {{else}}
+                    <li class="ember-view active user-list-item">{{partial 'user-list-item'}}</li>
+                {{/unless}}
             {{/each}}
 
         </section>
